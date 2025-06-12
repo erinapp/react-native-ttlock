@@ -36,7 +36,13 @@ public class MainActivity extends ReactActivity {
       permissionsArray.pushString(permission);
     }
     
-    ttlockModule.onRequestPermissionsResult(requestCode, permissionsArray, grantResults);
+    // Convert int[] to WritableArray for Turbo Module compatibility
+    WritableArray grantResultsArray = Arguments.createArray();
+    for (int result : grantResults) {
+      grantResultsArray.pushInt(result);
+    }
+    
+    ttlockModule.onRequestPermissionsResult(requestCode, permissionsArray, grantResultsArray);
   }
 
 }
