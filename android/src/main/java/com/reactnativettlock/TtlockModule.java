@@ -31,11 +31,14 @@ import com.reactnativettlock.model.IpSettingConverter;
 import com.reactnativettlock.model.RNControlAction;
 import com.reactnativettlock.model.ScanRemoteModal;
 import com.reactnativettlock.model.TTBaseFieldConstant;
+import com.reactnativettlock.model.TTDoorSensorErrorConverter;
 import com.reactnativettlock.model.TTDoorSensorEvent;
 import com.reactnativettlock.model.TTDoorSensorFieldConstant;
+import com.reactnativettlock.model.TTGatewayErrorConverter;
 import com.reactnativettlock.model.TTGatewayEvent;
 import com.reactnativettlock.model.TTGatewayFieldConstant;
 import com.reactnativettlock.model.TTKeypadConstant;
+import com.reactnativettlock.model.TTKeypadErrorConverter;
 import com.reactnativettlock.model.TTKeypadEvent;
 import com.reactnativettlock.model.TTLockConfigConverter;
 import com.reactnativettlock.model.TTLockErrorConverter;
@@ -43,6 +46,7 @@ import com.reactnativettlock.model.TTLockEvent;
 import com.reactnativettlock.model.TTLockFieldConstant;
 import com.reactnativettlock.model.TTRemoteEvent;
 import com.reactnativettlock.model.TTRemoteFieldConstant;
+import com.reactnativettlock.model.TTRemoteKeyErrorConverter;
 import com.reactnativettlock.util.PermissionUtils;
 import com.reactnativettlock.util.Utils;
 import com.ttlock.bl.sdk.api.ExtendedBluetoothDevice;
@@ -58,8 +62,10 @@ import com.ttlock.bl.sdk.callback.ClearAllICCardCallback;
 import com.ttlock.bl.sdk.callback.ClearFaceCallback;
 import com.ttlock.bl.sdk.callback.ClearPassageModeCallback;
 import com.ttlock.bl.sdk.callback.ClearRemoteCallback;
+import com.ttlock.bl.sdk.callback.ClearWifiPowerSavingTimesCallback;
 import com.ttlock.bl.sdk.callback.ConfigServerCallback;
 import com.ttlock.bl.sdk.callback.ConfigWifiCallback;
+import com.ttlock.bl.sdk.callback.ConfigWifiPowerSavingTimesCallback;
 import com.ttlock.bl.sdk.callback.ControlLockCallback;
 import com.ttlock.bl.sdk.callback.CreateCustomPasscodeCallback;
 import com.ttlock.bl.sdk.callback.DeleteDoorSensorCallback;
@@ -74,12 +80,14 @@ import com.ttlock.bl.sdk.callback.GetBatteryLevelCallback;
 import com.ttlock.bl.sdk.callback.GetLockConfigCallback;
 import com.ttlock.bl.sdk.callback.GetLockSoundWithSoundVolumeCallback;
 import com.ttlock.bl.sdk.callback.GetLockStatusCallback;
+import com.ttlock.bl.sdk.callback.GetLockSystemInfoCallback;
 import com.ttlock.bl.sdk.callback.GetLockTimeCallback;
 import com.ttlock.bl.sdk.callback.GetLockVersionCallback;
 import com.ttlock.bl.sdk.callback.GetOperationLogCallback;
 import com.ttlock.bl.sdk.callback.GetRemoteUnlockStateCallback;
 import com.ttlock.bl.sdk.callback.GetUnlockDirectionCallback;
 import com.ttlock.bl.sdk.callback.GetWifiInfoCallback;
+import com.ttlock.bl.sdk.callback.GetWifiPowerSavingTimesCallback;
 import com.ttlock.bl.sdk.callback.InitLockCallback;
 import com.ttlock.bl.sdk.callback.ModifyAdminPasscodeCallback;
 import com.ttlock.bl.sdk.callback.ModifyFacePeriodCallback;
@@ -327,7 +335,7 @@ public class TtlockModule extends ReactContextBaseJavaModule {
 
       @Override
       public void onFail(KeypadError error) {
-        fail.invoke(error.getErrorCode(), error.getDescription());
+        fail.invoke(TTKeypadErrorConverter.native2RN(error), error.getDescription());
       }
     });
   }
@@ -369,9 +377,9 @@ public class TtlockModule extends ReactContextBaseJavaModule {
         WirelessDoorSensorClient.getDefault().initialize(mCachedDoorSensor.get(doorSensorMac), lockData, new InitDoorSensorCallback() {
             @Override
             public void onInitSuccess(InitDoorSensorResult initDoorSensorResult) {
-              Log.e("tag","init doorsensor success");
-              Log.e("tag","doorsensor battery:" + initDoorSensorResult.getBatteryLevel());
-              Log.e("tag","doorsensor info:" + GsonUtil.toJson(initDoorSensorResult.getFirmwareInfo()));
+//              Log.e("tag","init doorsensor success");
+//              Log.e("tag","doorsensor battery:" + initDoorSensorResult.getBatteryLevel());
+//              Log.e("tag","doorsensor info:" + GsonUtil.toJson(initDoorSensorResult.getFirmwareInfo()));
                 WritableArray writableArray = Arguments.createArray();
                 writableArray.pushInt(initDoorSensorResult.getBatteryLevel());
                 writableArray.pushString(GsonUtil.toJson(initDoorSensorResult.getFirmwareInfo()));
@@ -380,8 +388,8 @@ public class TtlockModule extends ReactContextBaseJavaModule {
 
             @Override
             public void onFail(DoorSensorError doorSensorError) {
-              Log.e("tag","add door sensor to lock failed:" + doorSensorError.getDescription());
-                int errorCode = doorSensorError == DoorSensorError.CONNECT_FAIL ? 2 : 0;
+//              Log.e("tag","add door sensor to lock failed:" + doorSensorError.getDescription());
+                int errorCode = TTDoorSensorErrorConverter.native2RN(doorSensorError);
                 fail.invoke(errorCode, doorSensorError.getDescription());
             }
         });
@@ -430,7 +438,7 @@ public class TtlockModule extends ReactContextBaseJavaModule {
 
         @Override
         public void onFail(RemoteError remoteError) {
-          fail.invoke(remoteError.getErrorCode(), remoteError.getDescription());
+          fail.invoke(TTRemoteKeyErrorConverter.native2RN(remoteError), remoteError.getDescription());
         }
       });
   }
@@ -449,7 +457,7 @@ public class TtlockModule extends ReactContextBaseJavaModule {
 
         @Override
         public void onFail(RemoteError remoteError) {
-          fail.invoke(remoteError.getErrorCode(), remoteError.getDescription());
+          fail.invoke(TTRemoteKeyErrorConverter.native2RN(remoteError), remoteError.getDescription());
         }
       });
   }
@@ -587,7 +595,7 @@ public class TtlockModule extends ReactContextBaseJavaModule {
 
         @Override
         public void onFail(GatewayError gatewayError) {
-          fail.invoke(gatewayError.getErrorCode());
+          fail.invoke(TTGatewayErrorConverter.native2RN(gatewayError));
         }
       });
     }
@@ -606,7 +614,7 @@ public class TtlockModule extends ReactContextBaseJavaModule {
         @Override
         public void onFail(GatewayError error) {
           LogUtil.d("error:" + error.getDescription());
-          fail.invoke(error.getErrorCode());
+          fail.invoke(TTGatewayErrorConverter.native2RN(error));
         }
       });
     }
@@ -1539,13 +1547,13 @@ public class TtlockModule extends ReactContextBaseJavaModule {
   /**
    *
    * @param soundVolumeValue
-   * On = -1,
+   *   On = -1,
    *   Off = 0,
-   *   Livel_1 = 1,
-   *   Livel_2 = 2,
-   *   Livel_3 = 3,
-   *   Livel_4 = 4,
-   *   Livel_5 = 5
+   *   Level_1 = 1,
+   *   Level_2 = 2,
+   *   Level_3 = 3,
+   *   Level_4 = 4,
+   *   Level_5 = 5
    * @param lockData
    * @param successCallback
    * @param fail
@@ -1594,13 +1602,13 @@ public class TtlockModule extends ReactContextBaseJavaModule {
         TTLockClient.getDefault().getLockSoundWithSoundVolume(lockData, new GetLockSoundWithSoundVolumeCallback() {
           @Override
           public void onGetLockSoundSuccess(boolean enable, SoundVolume soundVolume) {
-//            On = -1,
-//              Off = 0,
-//              Livel_1 = 1,
-//              Livel_2 = 2,
-//              Livel_3 = 3,
-//              Livel_4 = 4,
-//              Livel_5 = 5
+//      On = -1,
+//      Off = 0,
+//      Level_1 = 1,
+//      Level_2 = 2,
+//      Level_3 = 3,
+//      Level_4 = 4,
+//      Level_5 = 5
             int soundVolumeValue = 0;
             if (enable) {
               switch (soundVolume) {
@@ -2219,6 +2227,96 @@ public class TtlockModule extends ReactContextBaseJavaModule {
           @Override
           public void onFail(LockError lockError) {
             lockErrorCallback(lockError, fail);
+          }
+        });
+      } else {
+        noPermissionCallback(fail);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void getLockSystem(String lockData, Callback successCallback, Callback fail) {
+    PermissionUtils.doWithConnectPermission(getCurrentActivity(), success -> {
+      if (success) {
+        TTLockClient.getDefault().getLockSystemInfo(lockData, null, new GetLockSystemInfoCallback() {
+          @Override
+          public void onGetLockSystemInfoSuccess(com.ttlock.bl.sdk.entity.DeviceInfo deviceInfo) {
+            WritableMap map = Arguments.createMap();
+            map.putString(TTBaseFieldConstant.MODEL_NUM, deviceInfo.getModelNum());
+            map.putString(TTBaseFieldConstant.HARDWARE_REVISION, deviceInfo.getHardwareRevision());
+            map.putString(TTBaseFieldConstant.FIRMWARE_REVISION, deviceInfo.getFirmwareRevision());
+            map.putString(TTLockFieldConstant.LOCK_DATA, deviceInfo.getLockData());
+            successCallback.invoke(map);
+          }
+
+          @Override
+          public void onFail(LockError lockError) {
+            lockErrorCallback(lockError, fail);
+          }
+        });
+      } else {
+        noPermissionCallback(fail);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void getWifiPowerSavingTime(String lockData, Callback successCallback, Callback fail) {
+    PermissionUtils.doWithConnectPermission(getCurrentActivity(), success -> {
+      if (success) {
+        TTLockClient.getDefault().getWifiPowerSavingTimes(lockData, new GetWifiPowerSavingTimesCallback() {
+          @Override
+          public void onGetSuccess(String powerSavingData) {
+            successCallback.invoke(powerSavingData);
+          }
+
+          @Override
+          public void onFail(LockError lockError) {
+            lockErrorCallback(lockError, fail);
+          }
+        });
+      } else {
+        noPermissionCallback(fail);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void configWifiPowerSavingTime(ReadableArray days, int startDate, int endDate, String lockData, Callback successCallback, Callback fail) {
+    PermissionUtils.doWithConnectPermission(getCurrentActivity(), success -> {
+      if (success) {
+        TTLockClient.getDefault().configWifiPowerSavingTimes(Utils.readableArray2IntList(days), startDate, endDate, lockData, new ConfigWifiPowerSavingTimesCallback() {
+          @Override
+          public void onConfigSuccess() {
+            successCallback.invoke();
+          }
+
+          @Override
+          public void onFail(LockError lockError) {
+            lockErrorCallback(lockError, fail);
+          }
+        });
+      } else {
+        noPermissionCallback(fail);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void clearWifiPowerSavingTime(String lockData, Callback successCallback, Callback fail) {
+    PermissionUtils.doWithConnectPermission(getCurrentActivity(), success -> {
+      if (success) {
+        TTLockClient.getDefault().clearWifiPowerSavingTimes(lockData, new ClearWifiPowerSavingTimesCallback() {
+
+          @Override
+          public void onFail(LockError lockError) {
+            lockErrorCallback(lockError, fail);
+          }
+
+          @Override
+          public void onClearSuccess() {
+            successCallback.invoke();
           }
         });
       } else {
