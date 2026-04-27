@@ -7,12 +7,13 @@ import store from './store';
 
 
 const connectGateway = (item: ScanGatewayModal, navigation: any) => {
+  console.log("网关类型：" + JSON.stringify(item))
   Toast.showToastLoad("connect...")
   TtGateway.stopScan();
   TtGateway.connect(item.gatewayMac, (state: ConnectState)=> {
     if(state === ConnectState.Success){
       Toast.hidden();
-      if(item.type === GatewayType.G2){
+      if(item.type === GatewayType.G2 || item.type === GatewayType.G5){
         navigation.navigate("ScanWifiPage",{type: item.type});
       }else{
         navigation.navigate("GatewayPage", { type: item.type });
