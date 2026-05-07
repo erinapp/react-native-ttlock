@@ -63,3 +63,8 @@ example/ios/Podfile.lock
 yarn.lock
 example/ios/Podfile.lock
 example/yarn.lock
+
+# env files
+.env*
+!.env.example
+!.env.sample
