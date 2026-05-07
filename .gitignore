@@ -60,3 +60,7 @@ android/keystores/debug.keystore
 lib/
 example/ios/Podfile.lock
 
+# env files
+.env*
+!.env.example
+!.env.sample
