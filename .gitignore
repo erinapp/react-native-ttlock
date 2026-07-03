@@ -8,6 +8,7 @@
 # VSCode
 .vscode/
 jsconfig.json
+.yarn
 
 # Xcode
 #
@@ -68,3 +69,4 @@ example/yarn.lock
 .env*
 !.env.example
 !.env.sample
+example/vendor/bundle
