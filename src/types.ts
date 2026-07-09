@@ -66,8 +66,8 @@ export interface InitGatewayParam {
   gatewayName: string,
   wifi: string|undefined,
   wifiPassword: string|undefined,
-  ttLockUid: number,
-  ttLockLoginPassword: string,
+  ttlockUid: number,
+  ttlockLoginPassword: string,
   serverIp: string|undefined,
   serverPort: number|undefined,
   

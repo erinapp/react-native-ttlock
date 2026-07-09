@@ -80,10 +80,17 @@ class Store {
   startScanWifi(finished:()=>void) {
    
     TtGateway.getNearbyWifi((list) => {
-      var wifiList1 = [...this.wifiList];
-      wifiList1.push(...list);
+      var wifiList1: ScanWifiModal[] = [];
+      this.wifiList.forEach((item) => {
+        wifiList1.push(item);
+      });
+      list.forEach((item) => {
+        wifiList1.push(item);
+      });
       //  wifi remove duplicates
-     var wifiList2 = [...new Set(wifiList1.map(item => item.wifi))].map(wifi => wifiList1.find(item => item.wifi === wifi)); 
+     const wifiUniqueArray = Array.from(new Set(wifiList1.map(item => item.wifi)));
+     var wifiList2: (ScanWifiModal | undefined)[] = []
+     wifiList2 = wifiUniqueArray.map(wifi => wifiList1.find(item => item.wifi === wifi)); 
      //  rssi sort asc
      var wifiList3 = wifiList2.sort((a, b) => a!.rssi - b!.rssi); 
 

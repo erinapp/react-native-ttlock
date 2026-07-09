@@ -9,7 +9,6 @@ buildscript {
   repositories {
     mavenCentral()
     google()
-    jcenter()
   }
 
   dependencies {
@@ -84,7 +83,6 @@ android {
 
 repositories {
   mavenCentral()
-  jcenter()
   google()
 //  flatDir {
 ////    dirs 'libs'
@@ -161,9 +159,9 @@ def kotlin_version = getExtOrDefault('kotlinVersion')
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
   // noinspection GradleDynamicVersion
-  api 'com.facebook.react:react-native:0.63.4'
+  implementation "com.facebook.react:react-android"
 //  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  implementation 'com.ttlock:ttlock:3.5.4'
+  implementation 'com.ttlock:ttlock:3.5.6'
 //  implementation(name: 'ttlock-release', ext: 'aar')
   implementation 'com.google.code.gson:gson:2.6.1'
 }

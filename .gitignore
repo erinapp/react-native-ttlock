@@ -69,4 +69,3 @@ example/yarn.lock
 .env*
 !.env.example
 !.env.sample
-example/vendor/bundle

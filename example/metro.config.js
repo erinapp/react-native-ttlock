@@ -5,9 +5,11 @@ const pak = require('../package.json');
 
 const root = path.resolve(__dirname, '..');
 
-const modules = Object.keys({
-  ...pak.peerDependencies,
-});
+const peerDependencies = Object.create(pak.peerDependencies);
+let modules = []
+for (const key in peerDependencies) {
+  modules.push(key)
+}
 
 module.exports = {
   projectRoot: __dirname,
